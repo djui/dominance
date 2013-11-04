@@ -73,9 +73,7 @@
                            rgb-res (->> pixels
                                         (map image/pixel->rgb)
                                         (k-means/centroids rgb-color-guesses))
-                           res (if (> (count rgb-res) (count yuv-res))
-                                 rgb-res
-                                 yuv-res)]
+                           res (max-key count rgb-res yuv-res)]
                        (->> res
                             (map image/clamp)
                             (map image/rgb->hex)

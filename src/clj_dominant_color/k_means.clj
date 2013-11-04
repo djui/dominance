@@ -7,10 +7,10 @@
 ;; Scalar
 
 (defn- distance [a b]
-  (if (< a b) (- b a) (- a b)))
+  (if (< a b) (- b a) (- a b))
 
-(defn- average [& list]
-  (/ (reduce + list) (count list)))
+  (defn- average [& list]
+    (/ (reduce + list) (count list))))
 
 ;; Vector
 

@@ -1,0 +1,66 @@
+; CIDER 0.3.1 (Clojure 1.5.1, nREPL 0.2.3)
+user> (clj-dominant-color.-main)
+CompilerException java.lang.ClassNotFoundException: clj-dominant-color.-main, compiling:(/private/var/folders/r8/1415b0jd4pz5fq4z4_hhxy7c0000gn/T/form-init6768708407598895039.clj:1:1) 
+user> (clj-dominant-color/-main)
+CompilerException java.lang.RuntimeException: No such namespace: clj-dominant-color, compiling:(/private/var/folders/r8/1415b0jd4pz5fq4z4_hhxy7c0000gn/T/form-init6768708407598895039.clj:1:1) 
+user> (clj-dominant-color/-main)
+CompilerException java.lang.RuntimeException: No such namespace: clj-dominant-color, compiling:(/private/var/folders/r8/1415b0jd4pz5fq4z4_hhxy7c0000gn/T/form-init6768708407598895039.clj:1:1) 
+user> (use 'clj-dominant-color)
+FileNotFoundException Could not locate clj_dominant_color__init.class or clj_dominant_color.clj on classpath:   clojure.lang.RT.load (RT.java:443)
+user> (clj-dominant-color.core/-main)
+[145 133 134]
+nil
+user> (clj-dominant-color.core/-main)
+ArityException Wrong number of args (3) passed to: core$-main$fn  clojure.lang.AFn.throwArity (AFn.java:437)
+user> (clj-dominant-color.core/-main)
+FileNotFoundException http://libsyn.com/podcasts/seradio/images/se-radio-logo_300x300_new.jpg  sun.net.www.protocol.http.HttpURLConnection.getInputStream (HttpURLConnection.java:1624)
+user> (clj-dominant-color.core/-main)
+FileNotFoundException http://libsyn.com/podcasts/seradio/images/se-radio-logo_300x300_new.jpg  sun.net.www.protocol.http.HttpURLConnection.getInputStream (HttpURLConnection.java:1624)
+user> (format "%2d.jpg" 1)
+" 1.jpg"
+user> (format "%02d.jpg" 1)
+"01.jpg"
+user> (def & partial)
+#'user/&
+user> ((& format "%02d.jpg") 1)
+"01.jpg"
+user> ((& format "%02d.jpg") 1)
+"01.jpg"
+user> (&format "%02d.jpg" 1)
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: &format in this context, compiling:(/private/var/folders/r8/1415b0jd4pz5fq4z4_hhxy7c0000gn/T/form-init6768708407598895039.clj:1:1) 
+user> (def % partial)
+#'user/%
+user> (def # partial)
+RuntimeException Unmatched delimiter: )  clojure.lang.Util.runtimeException (Util.java:219)
+user> (def # partial)
+RuntimeException Unmatched delimiter: )  clojure.lang.Util.runtimeException (Util.java:219)
+user> (def ? partial
+)
+#'user/?
+user> (clj-dominant-color.core/-main)
+[145 133 134]
+nil
+user> (clj-dominant-color.core/-main)
+[145 133 134]
+nil
+user> (clj-dominant-color.core/-main)
+ArityException Wrong number of args (2) passed to: core$cache$fn  clojure.lang.AFn.throwArity (AFn.java:437)
+user> (clj-dominant-color.core/-main)
+[145 133 134]
+nil
+user> (clj-dominant-color.core/-main)
+IllegalArgumentException No matching field found: getWidth for class java.io.File  clojure.lang.Reflector.getInstanceField (Reflector.java:271)
+user> (clj-dominant-color.core/-main)
+IllegalArgumentException input == null!  javax.imageio.ImageIO.read (ImageIO.java:1298)
+user> (clj-dominant-color.core/-main)
+(#<File resources/01.jpg> #<File resources/02.jpg> #<File resources/03.jpg> #<File resources/04.jpg> #<File resources/05.jpg> #<File resources/06.jpg> #<File resources/07.jpg> #<File resources/08.jpg> #<File resources/09.jpg> #<File resources/10.jpg> #<File resources/11.jpg> #<File resources/12.jpg> #<File resources/13.jpg> #<File resources/14.jpg> #<File resources/15.jpg> #<File resources/16.jpg> #<File resources/17.jpg> #<File resources/18.jpg> #<File resources/19.jpg> #<File resources/20.jpg> #<File resources/21.jpg> #<File resources/22.jpg> #<File resources/23.jpg> #<File resources/24.jpg> #<File resources/25.jpg> #<File resources/26.jpg> #<File resources/27.jpg> #<File resources/29.jpg> #<File resources/30.jpg> #<File resources/31.jpg> #<File resources/32.jpg> #<File resources/33.jpg> #<File resources/34.jpg> #<File resources/35.jpg> #<File resources/36.jpg> #<File resources/38.jpg> #<File resources/39.jpg> #<File resources/40.jpg> #<File resources/41.jpg> #<File resources/42.jpg>)
+IllegalArgumentException No matching field found: getWidth for class java.io.File  clojure.lang.Reflector.getInstanceField (Reflector.java:271)
+user> (File. "project.clj")
+CompilerException java.lang.IllegalArgumentException: Unable to resolve classname: File, compiling:(/private/var/folders/r8/1415b0jd4pz5fq4z4_hhxy7c0000gn/T/form-init6768708407598895039.clj:1:1) 
+user> (clojure.java.File. "project.clj")
+CompilerException java.lang.ClassNotFoundException: clojure.java.File, compiling:(/private/var/folders/r8/1415b0jd4pz5fq4z4_hhxy7c0000gn/T/form-init6768708407598895039.clj:1:1) 
+user> (clojure.java.io/File. "project.clj")
+CompilerException java.lang.IllegalArgumentException: Unable to resolve classname: File, compiling:(/private/var/folders/r8/1415b0jd4pz5fq4z4_hhxy7c0000gn/T/form-init6768708407598895039.clj:1:1) 
+user> (clojure.java.io/file "project.clj")
+#<File project.clj>
+user> (java.net.URL. (clojure.java.io/file "project.clj"))

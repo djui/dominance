@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<opml version="1.0">
+  <head>
+    <title>Pocket Cast Feeds</title>
+    <dateCreated>Fri, 01 Nov 2013 13:45:25 +0000</dateCreated>
+    <dateModified>Fri, 01 Nov 2013 13:45:25 +0000</dateModified>
+  </head>
+  <body>
+    <outline text="feeds">
+      <outline text="The Talk Show With John Gruber" type="rss" xmlUrl="HTTP://feeds.feedburner.com/the_talk_show"/>
+      <outline text="Debug" type="rss" xmlUrl="HTTP://feeds.feedburner.com/debugshow"/>
+      <outline text="Iterate" type="rss" xmlUrl="http://feeds.feedburner.com/Iterate"/>
+      <outline text="Stuff You Should Know" type="rss" xmlUrl="http://www.howstuffworks.com/podcasts/stuff-you-should-know.rss"/>
+      <outline text="This American Life" type="rss" xmlUrl="http://feeds.thisamericanlife.org/talpodcast"/>
+      <outline text="Radiolab from WNYC" type="rss" xmlUrl="http://feeds.wnyc.org/radiolab"/>
+      <outline text="Accidental Tech Podcast" type="rss" xmlUrl="http://atp.fm/episodes?format=rss"/>
+      <outline text="Security Now (MP3)" type="rss" xmlUrl="http://leoville.tv/podcasts/sn.xml"/>
+      <outline text="Freak Show" type="rss" xmlUrl="http://feeds.feedburner.com/mobile-macs-podcast"/>
+      <outline text="TEDTalks (video)" type="rss" xmlUrl="http://feeds.feedburner.com/TEDTalks_video"/>
+      <outline text="Manager Tools" type="rss" xmlUrl="http://www.manager-tools.com/feeds/mt_podcasts.xml"/>
+      <outline text="Career Tools" type="rss" xmlUrl="http://career.managertools.com/rss/rss.xml"/>
+      <outline text="Spr&#xE5;ket i P1" type="rss" xmlUrl="http://api.sr.se/api/rss/pod/4012"/>
+      <outline text="60-Second Mind" type="rss" xmlUrl="http://www.scientificamerican.com/podcast/sciam_podcast_i_psych.xml"/>
+      <outline text="NeuroPod" type="rss" xmlUrl="http://feeds.nature.com/nature/podcast/neuropod"/>
+      <outline text="Bitar till Kaffet" type="rss" xmlUrl="http://www.bitartillkaffet.se/feed/"/>
+      <outline text="Nerdkunde" type="rss" xmlUrl="http://nerdkunde.de/episodes.m4a.rss"/>
+      <outline text="ThinkRelevance: The Podcast" type="rss" xmlUrl="http://feeds.feedburner.com/thinkrelevance/podcast"/>
+      <outline text="Mostly Erlang &#xBB; podcast" type="rss" xmlUrl="http://feeds.feedburner.com/MostlyErlangPodcast"/>
+      <outline text="Bits und so" type="rss" xmlUrl="http://www.bitsundso.de/feed/"/>
+      <outline text="The Changelog" type="rss" xmlUrl="http://feeds.5by5.tv/changelog"/>
+      <outline text="Newz of the World" type="rss" xmlUrl="http://feeds.feedburner.com/newz-of-the-world"/>
+      <outline text="CRE: Technik, Kultur, Gesellschaft" type="rss" xmlUrl="http://feeds.feedburner.com/cre-podcast/"/>
+      <outline text="Jake and Amir" type="rss" xmlUrl="http://www.collegehumor.com/itunes/podcast/jakeandamir/rss"/>
+      <outline text="Fanboys" type="rss" xmlUrl="http://fanboys.fm/episodes.m4a.rss"/>
+      <outline text="Brain Science Podcast" type="rss" xmlUrl="http://feeds.feedburner.com/brainsciencepodcast"/>
+      <outline text="Braincast - auf der Frequenz zwischen Geist und Gehirn" type="rss" xmlUrl="http://arvid9.hipcast.com/rss/braincast.xml"/>
+      <outline text="Software Engineering Radio - the podcast for professional software developers" type="rss" xmlUrl="http://feeds.feedburner.com/se-radio"/>
+      <outline text="All In The Mind - Program podcast" type="rss" xmlUrl="http://www.abc.net.au/radionational/feed/2888650/podcast.xml"/>
+      <outline text="NDR Info - Der satirische Wochenr&#xFC;ckblick" type="rss" xmlUrl="http://www.ndr.de/podcast/podcast3002.xml"/>
+      <outline text="NDR Info - Bildungsreport" type="rss" xmlUrl="http://www.ndr.de/podcast/podcast2984.xml"/>
+      <outline text="NSBrief" type="rss" xmlUrl="http://feeds.nsbrief.com/nsbrief"/>
+      <outline text="TechHive" type="rss" xmlUrl="http://clockwise.libsyn.com/rss"/>
+      <outline text="Distributed Podcast" type="rss" xmlUrl="http://feeds.feedburner.com/DistributedPodcast"/>
+      <outline text="Foundation (HD MP4 - 30fps)" type="rss" xmlUrl="http://revision3.com/foundation/feed/mp4-hd30"/>
+      <outline text="Mostly &#x3BB;azy&#x2026;a Clojure podcast &#xBB; Episode" type="rss" xmlUrl="HTTP://feeds.feedburner.com/MostlyLazy"/>
+      <outline text="The Scala Types" type="rss" xmlUrl="HTTP://scalatypes.com/rss"/>
+      <outline text="Lambda Lounge" type="rss" xmlUrl="http://blip.tv/lambda-lounge/rss/itunes"/>
+      <outline text="Der Lautsprecher" type="rss" xmlUrl="http://feeds.feedburner.com/DerLautsprecher"/>
+      <outline text="Die Sondersendung" type="rss" xmlUrl="http://die-sondersendung.de/feed/m4a/"/>
+      <outline text="QCast - InfoQ Presentation Podcast" type="rss" xmlUrl="http://infoqcast.herokuapp.com/feed"/>
+      <outline text="QCast - InfoQ Presentation Podcast" type="rss" xmlUrl="Http://infoqcast.herokuapp.com/feed/video"/>
+    </outline>
+  </body>
+</opml>

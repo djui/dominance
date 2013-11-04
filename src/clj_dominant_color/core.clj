@@ -52,8 +52,13 @@
 ;;; TODO: Add weighting between brightness and away from black & white
 ;;; TODO: Add stddev and mean to centroid
 (defn -main
-  " Generation Rule: Resize to 100x100px, calculate both, YUV and RGB, prefer YUV, but pick RGB if more colors.
-    Selection  Rule: ..."
+  " Generation Rule: Resize to 100x100px, calculate both, YUV and RGB, prefer
+    YUV, but pick RGB if more colors.
+
+    Selection  Rule: Sort color by
+      (i) mu with smallest sigma *
+      (ii) by brightness.
+    Pick from top as soon as not too bright."
   []
   #_(cache (map image-url (podcast-urls "podcasts.opml")))
   (let [size 100

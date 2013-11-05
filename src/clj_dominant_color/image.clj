@@ -27,17 +27,17 @@
 (defn- as-url [path]
   (cond
    (instance? URL path) path
-   (instance? java.io.File path) (.toURL path)
+   (instance? java.io.File path) (.toURL ^java.io.File path)
    (instance? String path) (URL. path)))
 
 ;;; Interface
 
 ;; Image
 
-(defn load-image [path]
+(defn load-image [^java.net.URL path]
   (ImageIO/read (as-url path)))
 
-(defn save-image [image type path]
+(defn save-image [^java.awt.image.BufferedImage image type path]
   (ImageIO/write image type (io/file path)))
 
 (defn resize [width height image]
@@ -58,12 +58,12 @@
                    :else (int %)))
        vec))
 
-(defn get-pixels [image]
+(defn get-pixels [^java.awt.image.BufferedImage image]
   (let [w (.getWidth image)
         h (.getHeight image)]
     (.getRGB image 0 0 w h nil 0 w)))
 
-(defn set-pixels [image pixels]
+(defn set-pixels [^java.awt.image.BufferedImage image pixels]
   (let [w (.getWidth image)
         h (.getHeight image)]
     (.setRGB image 0 0 w h pixels 0 w)))

@@ -28,7 +28,7 @@
     (dorun (pmap #(try' download % %2) urls files))))
 
 (defn- images [path]
-  (let [jpg? #(and (.isFile %) (.endsWith (.getName %) ".jpg"))]
+  (let [jpg? (fn [^java.io.File f] (and (.isFile f) (.endsWith (.getName f) ".jpg")))]
     (->> path io/file file-seq (filter jpg?))))
 
 (defn- image-url [podcast-url]
@@ -66,7 +66,7 @@
                                 image/YUV-WHITE image/YUV-BLACK)
         rgb-color-guesses (list image/RGB-RED image/RGB-GREEN image/RGB-BLUE
                                 image/RGB-WHITE image/RGB-BLACK)
-        extract-fn (fn [img]
+        extract-fn (fn [^java.io.File img]
                      (let [pixels (->> img
                                        image/load-image
                                        (image/resize-width size)

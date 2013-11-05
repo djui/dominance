@@ -71,15 +71,13 @@
 ;;; Interface
 
 (defn clusters [guesses data]
-  ;; TODO: Convert to multi-method
   (let [guesses' (cond (list?    guesses) guesses
                        (integer? guesses) (random-guesses guesses data))
         k-groups-fn (cond (vector? (first data)) (k-groups data vec-distance vec-average)
                           (number? (first data)) (k-groups data distance average))]
-    (-> guesses k-groups-fn last)))
+    (last (k-groups-fn guesses'))))
 
 (defn centroids [guesses data]
-  ;; TODO: Convert to multi-method
   (let [average-fn (cond (vector? (first data)) vec-average
                          (number? (first data)) average)]
-    (->> (clusters guesses data) (map #(apply average-fn %)))))
+    (map #(apply average-fn %) (clusters guesses data))))

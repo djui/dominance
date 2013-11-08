@@ -12,7 +12,7 @@
 (def  &    partial)
 (defn try' [f & args] (try (apply f args) (catch Exception _)))
 (defn sqr  [n] (* n n))
-(defn /?   [x y] (when-not (zero? y) (/ x y)))
+(defn div? [x y] (when-not (zero? y) (/ x y)))
 
 (defn download [uri file]
   (with-open [in (io/input-stream uri)
@@ -73,9 +73,10 @@
         yuv-palette (dominant-yuv-colors pixels)
         rgb-palette (dominant-rgb-colors pixels)
         best-palette (max-key count rgb-palette yuv-palette)]
-    (cons (.getPath img)
-          (map #(update-in % [:mean] (comp image/rgb->hex image/clamp))
-               best-palette))))
+    (->> best-palette
+         (map #(update-in % [:mean] (comp image/rgb->hex image/clamp)))
+         (map #(assoc-in % [:weight] (div? (sqr (:count %)) (:stddev %))))
+         (cons (.getPath img)))))
 
 (defn- html [result]
   (println "<style>")
@@ -87,16 +88,9 @@
   (doseq [[path & palette] result]
     (println "<div class=\"podcast\">")
     (println (format "  <img src=\"%s\" /><br />" path))
-    (doseq [color (sort-by #(/? (sqr (:count %)) (:stddev %)) palette)]
-      (println (format "  <div style=\"background-color:%s;\"></div>"(:mean color)))
-      (println (format "  <!-- s:%.2f c:%d s*c:%.2f s/c:%.2f c/s:%.2f c^2/s:%.2f -->"
-                       (:stddev color)
-                       (:count color)
-                       (* (:stddev color) (:count color))
-                       (if (> (:count color) 0) (/ (:stddev color) (:count color)) 0.0)
-                       (if (> (:stddev color) 0) (/ (:count color) (:stddev color)) 0.0)
-                       (if (> (:stddev color) 0) (/ (* (:count color) (:count color)) (:stddev color)) 0.0))))
-    (println "</div>")))
+    (doseq [color (sort-by :weight palette)]
+      (println (format "  <div style=\"background-color:%s;\"></div>" (:mean color)))
+      (println "</div>"))))
 
 
 ;;; Interface

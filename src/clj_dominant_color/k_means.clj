@@ -4,6 +4,12 @@
 
 ;;; Utilities
 
+(def & partial)
+
+(defn && [fn] (partial apply fn))
+
+(defn hash-map' [keys vals]
+  (apply hash-map (interleave keys vals)))
 
 (defn- sqr [n]
   #_(Math/pow n 2)
@@ -83,14 +89,32 @@
 
 ;;; Interface
 
-(defn clusters [guesses data]
+(defn clusters
+  "Calculate clusters given a dataset and guesses, either as scalars or
+  vectors."
+  [guesses data]
   (let [guesses' (cond (list?    guesses) guesses
                        (integer? guesses) (random-guesses guesses data))
         k-groups-fn (cond (vector? (first data)) (k-groups data vec-distance vec-average)
                           (number? (first data)) (k-groups data distance average))]
     (last (k-groups-fn guesses'))))
 
-(defn centroids [guesses data]
-  (let [average-fn (cond (vector? (first data)) vec-average
-                         (number? (first data)) average)]
-    (map #(apply average-fn %) (clusters guesses data))))
+(defn centroids
+  "Calculate centroids given a dataset and guesses, either as scalars or
+  vectors."
+  [guesses data]
+  (let [d (first data)
+        average-fn (cond (vector? d) vec-average
+                         (number? d) average)]
+    (map #(apply average-fn %)
+         (clusters guesses data))))
+
+(defn weighted-centroids
+  "Calculate centroids given a dataset and guesses, either as scalars or
+  vectors, and return a vector of mean, standard deviation, and count."
+  [guesses data]
+  (let [d (first data)
+        res-fn (cond (vector? d) (juxt (&& vec-average) (&& vec-stddev) count)
+                     (number? d) (juxt (&& average) (&& stddev) count))]
+    (map #(hash-map' [:mean :stddev :count] (res-fn %))
+         (clusters guesses data))))

@@ -14,9 +14,12 @@
 (defn- distance [a b]
   (if (< a b) (- b a) (- a b)))
 
+(defn- average [& l]
+  (/ (reduce + l) (count l)))
 
-  (defn- average [& list]
-    (/ (reduce + list) (count list))))
+(defn- stddev [& l]
+  (let [avg (apply average l)]
+    (Math/sqrt (/ (reduce + (map #(sqr (distance avg %)) l)) (count l)))))
 
 ;; Vector
 
@@ -25,6 +28,10 @@
 
 (defn- vec-average [& l]
   (map #(/ % (count l)) (apply map + l)))
+
+(defn- vec-stddev [& l]
+  (let [avg (apply vec-average l)]
+    (Math/sqrt (/ (reduce + (map #(sqr (vec-distance avg %)) l)) (count l)))))
 
 
 ;;; Internals

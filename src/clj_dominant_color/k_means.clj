@@ -4,10 +4,16 @@
 
 ;;; Utilities
 
+
+(defn- sqr [n]
+  #_(Math/pow n 2)
+  (* n n))
+
 ;; Scalar
 
 (defn- distance [a b]
-  (if (< a b) (- b a) (- a b))
+  (if (< a b) (- b a) (- a b)))
+
 
   (defn- average [& list]
     (/ (reduce + list) (count list))))
@@ -15,7 +21,7 @@
 ;; Vector
 
 (defn- vec-distance [a b]
-  (reduce + (map #(* % %) (map - a b))))
+  (reduce + (map sqr (map - a b))))
 
 (defn- vec-average [& l]
   (map #(/ % (count l)) (apply map + l)))

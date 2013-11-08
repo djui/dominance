@@ -9,11 +9,10 @@
 
 ;;; Utilities
 
-(def & partial)
-
-(defn try' [f & args]
-  (try (apply f args)
-       (catch Exception _)))
+(def  &    partial)
+(defn try' [f & args] (try (apply f args) (catch Exception _)))
+(defn sqr  [n] (* n n))
+(defn /?   [x y] (when-not (zero? y) (/ x y)))
 
 (defn download [uri file]
   (with-open [in (io/input-stream uri)
@@ -42,6 +41,63 @@
        (try' html/dom)
        (html/select-all [:opml :body :outline :outline] (html/attr :xmlurl))))
 
+(defn- pixels [size img]
+  (->> img
+       image/load-image
+       (image/resize-width size)
+       image/get-pixels))
+
+(defn- dominant-yuv-colors [pixels]
+  (let [guesses (list image/YUV-RED
+                      image/YUV-GREEN
+                      image/YUV-BLUE
+                      image/YUV-WHITE
+                      image/YUV-BLACK)]
+    (->> pixels
+         (map image/pixel->yuv)
+         (k-means/weighted-centroids guesses)
+         (map #(update-in % [:mean] image/yuv->rgb)))))
+
+(defn- dominant-rgb-colors [pixels]
+  (let [guesses (list image/RGB-RED
+                      image/RGB-GREEN
+                      image/RGB-BLUE
+                      image/RGB-WHITE
+                      image/RGB-BLACK)]
+    (->> pixels
+         (map image/pixel->rgb)
+         (k-means/weighted-centroids guesses))))
+
+(defn- dominant-colors [^java.io.File img]
+  (let [pixels (pixels 100 img)
+        yuv-palette (dominant-yuv-colors pixels)
+        rgb-palette (dominant-rgb-colors pixels)
+        best-palette (max-key count rgb-palette yuv-palette)]
+    (cons (.getPath img)
+          (map #(update-in % [:mean] (comp image/rgb->hex image/clamp))
+               best-palette))))
+
+(defn- html [result]
+  (println "<style>")
+  (println ".podcast { display:inline-block; }")
+  (println ".podcast > img { width:200px; height:200px; }")
+  (println ".podcast > div { border:1px solid gray; display:inline-block; width:30px; height:30px; }")
+  (println ".podcast > span { display:none; }")
+  (println "</style>")
+  (doseq [[path & palette] result]
+    (println "<div class=\"podcast\">")
+    (println (format "  <img src=\"%s\" /><br />" path))
+    (doseq [color (sort-by #(/? (sqr (:count %)) (:stddev %)) palette)]
+      (println (format "  <div style=\"background-color:%s;\"></div>"(:mean color)))
+      (println (format "  <!-- s:%.2f c:%d s*c:%.2f s/c:%.2f c/s:%.2f c^2/s:%.2f -->"
+                       (:stddev color)
+                       (:count color)
+                       (* (:stddev color) (:count color))
+                       (if (> (:count color) 0) (/ (:stddev color) (:count color)) 0.0)
+                       (if (> (:stddev color) 0) (/ (:count color) (:stddev color)) 0.0)
+                       (if (> (:stddev color) 0) (/ (* (:count color) (:count color)) (:stddev color)) 0.0))))
+    (println "</div>")))
+
 
 ;;; Interface
 
@@ -55,40 +111,8 @@
   " Generation Rule: Resize to 100x100px, calculate both, YUV and RGB, prefer
     YUV, but pick RGB if more colors.
 
-    Selection  Rule: Sort color by
-      (i) mu with smallest sigma *
-      (ii) by brightness.
+    Selection Rule: Sort color by mu with smallest sigma * brightness.
     Pick from top as soon as not too bright."
   []
   #_(cache (map image-url (podcast-urls "podcasts.opml")))
-  (let [size 100
-        yuv-color-guesses (list image/YUV-RED image/YUV-GREEN image/YUV-BLUE
-                                image/YUV-WHITE image/YUV-BLACK)
-        rgb-color-guesses (list image/RGB-RED image/RGB-GREEN image/RGB-BLUE
-                                image/RGB-WHITE image/RGB-BLACK)
-        extract-fn (fn [^java.io.File img]
-                     (let [pixels (->> img
-                                       image/load-image
-                                       (image/resize-width size)
-                                       image/get-pixels)
-                           yuv-res (->> pixels
-                                        (map image/pixel->yuv)
-                                        (k-means/centroids yuv-color-guesses)
-                                        (map image/yuv->rgb))
-                           rgb-res (->> pixels
-                                        (map image/pixel->rgb)
-                                        (k-means/centroids rgb-color-guesses))
-                           res (max-key count rgb-res yuv-res)]
-                       (->> res
-                            (map image/clamp)
-                            (map image/rgb->hex)
-                            (cons (.getPath img)))))
-        res (map extract-fn (images "resources"))]
-    (doseq [[path & colors] res]
-      (println "<div style=\"display:inline-block;\">")
-      (println (format "  <img style=\"width:200px; height:200px;\" src=\"%s\" />" path))
-      (println "  <br />")
-      (doseq [color colors]
-        (println (format "  <div style=\"border:1px solid gray; display:inline-block; background-color:%s; width:30px; height:30px\">" color))
-        (println "</div>"))
-      (println "</div>"))))
+  (html (map dominant-colors (images "resources"))))

@@ -99,9 +99,20 @@
   (doseq [[path & palette] result]
     (println "<div class=\"podcast\">")
     (println (format "  <img src=\"%s\" /><br />" path))
-    (doseq [color (sort-by :weight palette)]
-      (println (format "  <div style=\"background-color:%s;\"></div>" (:mean color)))
-      (println "</div>"))))
+    (let [bg-fg-threshold 200
+          bg-color (first palette)
+          chrominance-colors (map #(assoc-in % [:contrast] (image/chrominance-distance (:mean bg-color) (:mean %))) palette)
+          contrast-colors (map #(assoc-in % [:contrast] (image/contrast (:mean bg-color) (:mean %))) palette)
+          chrominance-fg-color (apply max-key :contrast chrominance-colors)
+          contrast-fg-color (apply max-key :contrast contrast-colors)
+          fg-color (if (> (:contrast chrominance-fg-color) bg-fg-threshold) chrominance-fg-color contrast-fg-color)]
+      (println (format "  <div style=\"background-color:%s;\">BG</div>" (:hex bg-color)))
+      (println (format "  <div style=\"background-color:%s;\">FG</div>" (:hex fg-color)))
+      (println "  <br />")
+      (doseq [color palette]
+        (println (format "  <div style=\"background-color:%s;\"></div>" (:hex color)))
+        (println (format "  <!-- w:%.2f s:%.2f c:%d k:%d -->" (:weight color) (:stddev color) (:count color) (:contrast color)))))
+    (println "</div>")))
 
 
 ;;; Interface

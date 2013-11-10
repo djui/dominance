@@ -72,16 +72,23 @@
          (map image/pixel->rgb)
          (k-means/weighted-centroids guesses weight-function))))
 
+(defn- decorate [color]
+  (assoc-in color [:hex] (-> color :mean image/clamp image/rgb->hex)))
+
+(defn- filter-palette [palette]
+  (let [weight-threshold 120] ;; 130
+    (if (> (count palette) 2)
+      (filter #(> (:weight %) weight-threshold) palette)
+      palette)))
 
 (defn- dominant-colors [^java.io.File img]
   (let [pixels (pixels 100 img)
         yuv-palette (dominant-yuv-colors pixels)
         rgb-palette (dominant-rgb-colors pixels)
-        best-palette (max-key count rgb-palette yuv-palette)]
-    (->> best-palette
-         (map #(update-in % [:mean] (comp image/rgb->hex image/clamp)))
-         (map #(assoc-in % [:weight] (div? (sqr (:count %)) (:stddev %))))
-         (cons (.getPath img)))))
+        best-palette (max-key count rgb-palette yuv-palette)
+        palette (map decorate best-palette)]
+    (cons (.getPath img)
+          (filter-palette palette))))
 
 (defn- html [result]
   (println "<style>")

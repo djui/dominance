@@ -9,10 +9,9 @@
 
 ;;; Utilities
 
-(def  &    partial)
-(defn try' [f & args] (try (apply f args) (catch Exception _)))
-(defn sqr  [n] (* n n))
-(defn div? [x y] (when-not (zero? y) (/ x y)))
+(def & partial)
+(defn- try' [f & args] (try (apply f args) (catch Exception _)))
+(defn- sqr [n] (* n n))
 
 (defn download [uri file]
   (with-open [in (io/input-stream uri)
@@ -47,6 +46,11 @@
        (image/resize-width size)
        image/get-pixels))
 
+(defn- weight-function [point]
+  (or (try' #(/ (sqr (:count point))
+                (:stddev point)))
+      0))
+
 (defn- dominant-yuv-colors [pixels]
   (let [guesses (list image/YUV-RED
                       image/YUV-GREEN
@@ -55,7 +59,7 @@
                       image/YUV-BLACK)]
     (->> pixels
          (map image/pixel->yuv)
-         (k-means/weighted-centroids guesses)
+         (k-means/weighted-centroids guesses weight-function)
          (map #(update-in % [:mean] image/yuv->rgb)))))
 
 (defn- dominant-rgb-colors [pixels]
@@ -66,7 +70,8 @@
                       image/RGB-BLACK)]
     (->> pixels
          (map image/pixel->rgb)
-         (k-means/weighted-centroids guesses))))
+         (k-means/weighted-centroids guesses weight-function))))
+
 
 (defn- dominant-colors [^java.io.File img]
   (let [pixels (pixels 100 img)

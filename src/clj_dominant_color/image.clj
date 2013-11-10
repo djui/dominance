@@ -51,13 +51,6 @@
 
 ;; Color
 
-(defn clamp [color]
-  (->> color
-       (map #(cond (> % 255) 255
-                   (< % 0) 0
-                   :else (int %)))
-       vec))
-
 (defn get-pixels [^java.awt.image.BufferedImage image]
   (let [w (.getWidth image)
         h (.getHeight image)]
@@ -67,6 +60,13 @@
   (let [w (.getWidth image)
         h (.getHeight image)]
     (.setRGB image 0 0 w h pixels 0 w)))
+
+(defn clamp [color]
+  (->> color
+       (map #(cond (> % 255) 255
+                   (< % 0) 0
+                   :else (int %)))
+       vec))
 
 (defn pixel->argb [pixel]
   [(bit-shift-right (bit-and pixel 0xFF000000) 24)
@@ -109,3 +109,27 @@
 
 (defn rgb->hex [[r g b]]
   (format "#%02X%02X%02X" r g b))
+
+(defn luma [[y u v]]
+  y)
+
+(defn chrominance [[y u v]]
+  [u v])
+
+(defn- euclidean-distance [a b]
+  (reduce + (map #(* % %) (map - a b))))
+
+(defn luma-distance [rgb1 rgb2]
+  (let [y1 (luma (rgb->yuv (clamp rgb1)))
+        y2 (luma (rgb->yuv (clamp rgb2)))]
+    (euclidean-distance [y1] [y2])))
+
+(defn chrominance-distance [rgb1 rgb2]
+  (let [uv1 (chrominance (rgb->yuv (clamp rgb1)))
+        uv2 (chrominance (rgb->yuv (clamp rgb2)))]
+    (euclidean-distance uv1 uv2)))
+
+(defn contrast [rgb1 rgb2]
+  (let [yuv1 (rgb->yuv (clamp rgb1))
+        yuv2 (rgb->yuv (clamp rgb2))]
+    (euclidean-distance yuv1 yuv2)))

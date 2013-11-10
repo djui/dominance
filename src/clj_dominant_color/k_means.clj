@@ -112,9 +112,13 @@
 (defn weighted-centroids
   "Calculate centroids given a dataset and guesses, either as scalars or
   vectors, and return a vector of mean, standard deviation, and count."
-  [guesses data]
+  [guesses weight-function data]
   (let [d (first data)
         res-fn (cond (vector? d) (juxt (&& vec-average) (&& vec-stddev) count)
                      (number? d) (juxt (&& average) (&& stddev) count))]
-    (map #(hash-map' [:mean :stddev :count] (res-fn %))
-         (clusters guesses data))))
+    (->> data
+         (clusters guesses)
+         (map #(hash-map' [:mean :stddev :count] (res-fn %)))
+         (map #(assoc-in % [:weight] (weight-function %)))
+         (sort-by :weight)
+         reverse)))

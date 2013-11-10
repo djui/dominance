@@ -95,7 +95,6 @@
   (println ".podcast { display:inline-block; }")
   (println ".podcast > img { width:200px; height:200px; }")
   (println ".podcast > div { border:1px solid gray; display:inline-block; width:30px; height:30px; }")
-  (println ".podcast > span { display:none; }")
   (println "</style>")
   (doseq [[path & palette] result]
     (println "<div class=\"podcast\">")
@@ -109,10 +108,6 @@
 
 ;; Main
 
-;;; TODO: Create new function \"weighted-centroids\" that
-;;;       returns a sorted by weight list of centroids [center weight(%?)].
-;;; TODO: Add weighting between brightness and away from black & white
-;;; TODO: Add stddev and mean to centroid
 (defn -main
   " Generation Rule: Resize to 100x100px, calculate both, YUV and RGB, prefer
     YUV, but pick RGB if more colors.

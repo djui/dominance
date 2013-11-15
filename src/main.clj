@@ -1,17 +1,15 @@
-(ns clj-dominant-color.core
+(ns main
   (:import java.net.URL)
-  (:require [clj-dominant-color.html    :as html]
-            [clj-dominant-color.image   :as image]
-            [clj-dominant-color.k-means :as k-means]
-            [clojure.java.io            :as io]
-            [net.cgrand.enlive-html     :as css]))
+  (:require [clojure.java.io :as io]
+            [dominance.core  :as dominance]
+            [html            :as html]))
 
 
 ;;; Utilities
 
-(def & partial)
-(defn- try' [f & args] (try (apply f args) (catch Exception _)))
-(defn- sqr [n] (* n n))
+(defn- try'
+  ([f] (try' f nil))
+  ([f default] (try (f) (catch Exception _ default))))
 
 (defn download [uri file]
   (with-open [in (io/input-stream uri)
@@ -22,7 +20,7 @@
 ;;; Internals
 
 (defn- cache [urls]
-  (let [files (map (& format "resources/%02d.jpg") (iterate inc 1))]
+  (let [files (map (partial format "resources/%02d.jpg") (iterate inc 1))]
     (dorun (pmap #(try' download % %2) urls files))))
 
 (defn- images [path]
@@ -39,56 +37,6 @@
        io/resource
        (try' html/dom)
        (html/select-all [:opml :body :outline :outline] (html/attr :xmlurl))))
-
-(defn- pixels [size img]
-  (->> img
-       image/load-image
-       (image/resize-width size)
-       image/get-pixels))
-
-(defn- weight-function [point]
-  (or (try' #(/ (sqr (:count point))
-                (:stddev point)))
-      0))
-
-(defn- dominant-yuv-colors [pixels]
-  (let [guesses (list image/YUV-RED
-                      image/YUV-GREEN
-                      image/YUV-BLUE
-                      image/YUV-WHITE
-                      image/YUV-BLACK)]
-    (->> pixels
-         (map image/pixel->yuv)
-         (k-means/weighted-centroids guesses weight-function)
-         (map #(update-in % [:mean] image/yuv->rgb)))))
-
-(defn- dominant-rgb-colors [pixels]
-  (let [guesses (list image/RGB-RED
-                      image/RGB-GREEN
-                      image/RGB-BLUE
-                      image/RGB-WHITE
-                      image/RGB-BLACK)]
-    (->> pixels
-         (map image/pixel->rgb)
-         (k-means/weighted-centroids guesses weight-function))))
-
-(defn- decorate [color]
-  (assoc-in color [:hex] (-> color :mean image/clamp image/rgb->hex)))
-
-(defn- filter-palette [palette]
-  (let [weight-threshold 120] ;; 130
-    (if (> (count palette) 2)
-      (filter #(> (:weight %) weight-threshold) palette)
-      palette)))
-
-(defn- dominant-colors [^java.io.File img]
-  (let [pixels (pixels 100 img)
-        yuv-palette (dominant-yuv-colors pixels)
-        rgb-palette (dominant-rgb-colors pixels)
-        best-palette (max-key count rgb-palette yuv-palette)
-        palette (map decorate best-palette)]
-    (cons (.getPath img)
-          (filter-palette palette))))
 
 (defn- html [result]
   (println "<style>")
@@ -127,4 +75,6 @@
     Pick from top as soon as not too bright."
   []
   #_(cache (map image-url (podcast-urls "podcasts.opml")))
-  (html (map dominant-colors (images "resources"))))
+  (->> (images "resources")
+       (map #(cons (.getPath %) (dominant-color/analyze %)))
+       html))

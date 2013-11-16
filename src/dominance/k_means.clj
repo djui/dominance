@@ -1,4 +1,4 @@
-(ns clj-dominant-color.k-means)
+(ns dominance.k-means)
 ;; Courtesy http://www.learningclojure.com/2011/01/k-means-algorithm-for-clustering-data.html
 
 

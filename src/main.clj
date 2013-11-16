@@ -39,42 +39,26 @@
        (html/select-all [:opml :body :outline :outline] (html/attr :xmlurl))))
 
 (defn- html [result]
-  (println "<style>")
-  (println ".podcast { display:inline-block; }")
-  (println ".podcast > img { width:200px; height:200px; }")
-  (println ".podcast > div { border:1px solid gray; display:inline-block; width:30px; height:30px; }")
-  (println "</style>")
-  (doseq [[path & palette] result]
-    (println "<div class=\"podcast\">")
-    (println (format "  <img src=\"%s\" /><br />" path))
-    (let [bg-fg-threshold 200
-          bg-color (first palette)
-          chrominance-colors (map #(assoc-in % [:contrast] (image/chrominance-distance (:mean bg-color) (:mean %))) palette)
-          contrast-colors (map #(assoc-in % [:contrast] (image/contrast (:mean bg-color) (:mean %))) palette)
-          chrominance-fg-color (apply max-key :contrast chrominance-colors)
-          contrast-fg-color (apply max-key :contrast contrast-colors)
-          fg-color (if (> (:contrast chrominance-fg-color) bg-fg-threshold) chrominance-fg-color contrast-fg-color)]
-      (println (format "  <div style=\"background-color:%s;\">BG</div>" (:hex bg-color)))
-      (println (format "  <div style=\"background-color:%s;\">FG</div>" (:hex fg-color)))
-      (println "  <br />")
-      (doseq [color palette]
-        (println (format "  <div style=\"background-color:%s;\"></div>" (:hex color)))
-        (println (format "  <!-- w:%.2f s:%.2f c:%d k:%d -->" (:weight color) (:stddev color) (:count color) (:contrast color)))))
-    (println "</div>")))
+  (println "<style>\n"
+           ".podcast { display:inline-block; }\n"
+           ".podcast > img { width:200px; height:200px; }\n"
+           ".podcast > div { border:1px solid gray; display:inline-block; width:30px; height:30px; }\n"
+           "</style>")
+  (doseq [[path bg fg] result]
+    (printf (str "<div class=\"podcast\">\n"
+                 "  <img src=\"%s\" /><br />\n"
+                 "  <div style=\"background-color:%s;\"></div>\n"
+                 "  <div style=\"background-color:%s;\"></div>\n"
+                 "  <br />\n"
+                 "</div>\n") path (:hex bg) (:hex fg))))
 
 
 ;;; Interface
 
 ;; Main
 
-(defn -main
-  " Generation Rule: Resize to 100x100px, calculate both, YUV and RGB, prefer
-    YUV, but pick RGB if more colors.
-
-    Selection Rule: Sort color by mu with smallest sigma * brightness.
-    Pick from top as soon as not too bright."
-  []
+(defn -main []
   #_(cache (map image-url (podcast-urls "podcasts.opml")))
   (->> (images "resources")
-       (map #(cons (.getPath %) (dominant-color/analyze %)))
+       (map #(cons (.getPath %) (dominance/bg-fg %)))
        html))

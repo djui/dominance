@@ -1,4 +1,4 @@
-(ns clj-dominant-color.image
+(ns dominance.image
   (:import java.net.URL
            javax.imageio.ImageIO
            org.imgscalr.Scalr
@@ -34,20 +34,39 @@
 
 ;; Image
 
-(defn load-image [^java.net.URL path]
-  (ImageIO/read (as-url path)))
+(defn load-image [path]
+  (ImageIO/read
+   ^java.net.URL (as-url path)))
 
-(defn save-image [^java.awt.image.BufferedImage image type path]
-  (ImageIO/write image type (io/file path)))
+(defn save-image [image type path]
+  (ImageIO/write
+   ^java.awt.image.BufferedImage image
+   ^String type
+   ^java.io.File (io/file path)))
 
 (defn resize [width height image]
-  (Scalr/resize image Scalr$Method/AUTOMATIC width height nil))
+  (Scalr/resize
+   ^java.awt.image.BufferedImage image
+   Scalr$Method/AUTOMATIC
+   ^int width
+   ^int height
+   nil))
 
 (defn resize-width [width image]
-  (Scalr/resize image Scalr$Method/AUTOMATIC Scalr$Mode/FIT_TO_WIDTH width nil))
+  (Scalr/resize
+   ^java.awt.image.BufferedImage image
+   Scalr$Method/AUTOMATIC
+   Scalr$Mode/FIT_TO_WIDTH
+   ^int width
+   nil))
 
 (defn resize-height [height image]
-  (Scalr/resize image Scalr$Method/AUTOMATIC Scalr$Mode/FIT_TO_HEIGHT height nil))
+  (Scalr/resize
+   ^java.awt.image.BufferedImage image
+   Scalr$Method/AUTOMATIC
+   Scalr$Mode/FIT_TO_HEIGHT
+   ^int height
+   nil))
 
 ;; Color
 

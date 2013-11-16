@@ -3,20 +3,7 @@
             [dominance.k-means :as k-means]))
 
 
-;;; Utilities
-
-(defn- try'
-  ([f] (try' f nil))
-  ([f default] (try (f) (catch Exception _ default))))
-
-(defn- sqr [n]
-  (* n n))
-
-
 ;;; Internals
-
-(defn- weight-function [point]
-  (try' #(/ (sqr (:count point)) (:stddev point))) 0)
 
 (defn- filter-palette [palette]
   (let [weight-threshold 120] ;; 130
@@ -24,10 +11,24 @@
       (filter #(> (:weight %) weight-threshold) palette)
       palette)))
 
-(defn- decorate-color [color]
-  (assoc-in color [:hex] (-> color :mean image/clamp image/rgb->hex)))
+(defn- decorate-palette [palette]
+  (let [bg-color (first palette)
+        chrominance-dist #(image/chrominance-distance (:mean bg-color) (:mean %))
+        contrast         #(image/contrast             (:mean bg-color) (:mean %))
+        hex              #(image/rgb->hex (image/clamp                 (:mean %)))]
+  (map #(as-> % c
+              (assoc-in c [:chrominance-dist] (chrominance-dist c))
+              (assoc-in c [:contrast] (contrast c))
+              (assoc-in c [:hex] (hex c)))
+       palette)))
 
-(defn- yuv-palette [pixels]
+(defn- weight-fn [point]
+  (let [{:keys [count stddev]} point]
+    (if (pos? stddev)
+      (/ (* count count) stddev)
+      0)))
+
+(defn- palette-yuv [pixels]
   (let [guesses (list image/YUV-RED
                       image/YUV-GREEN
                       image/YUV-BLUE
@@ -35,10 +36,10 @@
                       image/YUV-BLACK)]
     (->> pixels
          (map image/pixel->yuv)
-         (k-means/weighted-centroids guesses weight-function)
+         (k-means/weighted-centroids guesses weight-fn)
          (map #(update-in % [:mean] image/yuv->rgb)))))
 
-(defn- rgb-palette [pixels]
+(defn- palette-rgb [pixels]
   (let [guesses (list image/RGB-RED
                       image/RGB-GREEN
                       image/RGB-BLUE
@@ -46,7 +47,7 @@
                       image/RGB-BLACK)]
     (->> pixels
          (map image/pixel->rgb)
-         (k-means/weighted-centroids guesses weight-function))))
+         (k-means/weighted-centroids guesses weight-fn))))
 
 (defn- pixel-data [size img]
   (->> img
@@ -57,10 +58,22 @@
 
 ;;; Interface
 
-(defn analyze [^java.io.File img]
+(defn palette [^java.io.File img]
   (->> img
-       (pixel-data 100)
-       ((juxt rgb-palette yuv-palette))
-       (apply max-key count)
-       (map decorate-color)
-       (filter-palette)))
+       (pixel-data 100)                 ;; Resize
+       ((juxt palette-rgb palette-yuv)) ;; Compute two palettes
+       (apply max-key count)            ;; Pick best palette
+       filter-palette                   ;; Filter out "weak" colors
+       decorate-palette))
+
+(defn color [^java.io.File img]
+  (first (palette img)))
+
+(defn bg-fg [^java.io.File img]
+  (let [palette (palette img)
+        contrast-key (if (> (apply max (map :chrominance-dist palette)) 200)
+                       :chrominance-dist
+                       :contrast)
+        bg-color (first palette)
+        fg-color (apply max-key contrast-key palette)]
+    [bg-color fg-color]))

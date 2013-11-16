@@ -1,4 +1,4 @@
-(ns clj-dominant-color.html
+(ns html
   (:require [clojure.string         :refer [trim]]
             [net.cgrand.enlive-html :as css])
   (:refer-clojure :exclude [meta]))

@@ -1,6 +1,6 @@
-(ns clj-dominant-color.core-test
+(ns dominance.core-test
   (:require [clojure.test :refer :all]
-            [clj-dominant-color.core :refer :all]))
+            [dominance.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."

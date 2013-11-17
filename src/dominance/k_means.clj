@@ -55,27 +55,25 @@
              (if (= v 1) (list (f k))
                  (cons (f k) (repeat (dec v) k)))))))
 
-(defn- new-means [average point-groups old-means]
+(defn- new-means [average-fn point-groups old-means]
   (update-seq old-means (fn [o]
                           (if (contains? point-groups o)
-                            (apply average (get point-groups o)) o))))
+                            (apply average-fn (get point-groups o)) o))))
 
-(defn- iterate-means [data distance-fn average]
-  (fn [means] (new-means average (point-groups means data distance-fn) means)))
+(defn- iterate-means [data distance-fn average-fn]
+  (fn [means]
+    (new-means average-fn (point-groups means data distance-fn) means)))
 
 (defn- groups [data distance-fn means]
   (vals (point-groups means data distance-fn)))
 
 (defn- take-while-unstable
   ([sq]
-     (lazy-seq (if-let [sq (seq sq)]
-                 (cons (first sq)
-                       (take-while-unstable (rest sq) (first sq))))))
+     (lazy-seq (cons (first sq)
+                     (take-while-unstable (rest sq) (first sq)))))
   ([sq last]
-     (lazy-seq (if-let [sq (seq sq)]
-                 (if (= (first sq) last)
-                   '()
-                   (take-while-unstable sq))))))
+     (lazy-seq (when-not (= (first sq) last)
+                 (take-while-unstable sq)))))
 
 (defn- k-groups [data distance-fn average-fn]
   (fn [guesses]

@@ -5,30 +5,26 @@
 
 ;;; Internals
 
-(defn- filter-palette [palette]
+(defn filter-palette [palette]
   (let [weight-threshold 120] ;; 130
     (if (> (count palette) 2)
       (filter #(> (:weight %) weight-threshold) palette)
       palette)))
 
-(defn- decorate-palette [palette]
-  (let [bg-color (first palette)
-        chrominance-dist #(image/chrominance-distance (:mean bg-color) (:mean %))
-        contrast         #(image/contrast             (:mean bg-color) (:mean %))
-        hex              #(image/rgb->hex (image/clamp                 (:mean %)))]
-  (map #(as-> % c
-              (assoc-in c [:chrominance-dist] (chrominance-dist c))
-              (assoc-in c [:contrast] (contrast c))
-              (assoc-in c [:hex] (hex c)))
-       palette)))
+(defn decorate-palette [palette]
+  (let [bg-mean (:mean (first palette))]
+    (map #(merge % {:chrominance (image/chrominance-distance bg-mean (:mean %))
+                    :contrast (image/contrast bg-mean (:mean %))
+                    :hex (image/rgb->hex (image/clamp (:mean %)))})
+         palette)))
 
-(defn- weight-fn [point]
+(defn weight-fn [point]
   (let [{:keys [count stddev]} point]
     (if (pos? stddev)
       (/ (* count count) stddev)
       0)))
 
-(defn- palette-yuv [pixels]
+(defn palette-yuv [pixels]
   (let [guesses (list image/YUV-RED
                       image/YUV-GREEN
                       image/YUV-BLUE
@@ -39,7 +35,7 @@
          (k-means/weighted-centroids guesses weight-fn)
          (map #(update-in % [:mean] image/yuv->rgb)))))
 
-(defn- palette-rgb [pixels]
+(defn palette-rgb [pixels]
   (let [guesses (list image/RGB-RED
                       image/RGB-GREEN
                       image/RGB-BLUE
@@ -49,7 +45,7 @@
          (map image/pixel->rgb)
          (k-means/weighted-centroids guesses weight-fn))))
 
-(defn- pixel-data [size img]
+(defn pixel-data [size img]
   (->> img
        image/load-image
        (image/resize-width size)
@@ -71,8 +67,8 @@
 
 (defn bg-fg [^java.io.File img]
   (let [palette (palette img)
-        contrast-key (if (> (apply max (map :chrominance-dist palette)) 200)
-                       :chrominance-dist
+        contrast-key (if (> (apply max (map :chrominance palette)) 200)
+                       :chrominance
                        :contrast)
         bg-color (first palette)
         fg-color (apply max-key contrast-key palette)]

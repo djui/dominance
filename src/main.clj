@@ -24,7 +24,9 @@
     (dorun (pmap #(try' download % %2) urls files))))
 
 (defn- images [path]
-  (let [jpg? (fn [^java.io.File f] (and (.isFile f) (.endsWith (.getName f) ".jpg")))]
+  (let [jpg? (fn [^java.io.File f]
+               (and (.isFile f)
+                    (.endsWith (.getName f) ".jpg")))]
     (->> path io/file file-seq (filter jpg?))))
 
 (defn- image-url [podcast-url]
@@ -38,19 +40,21 @@
        (try' html/dom)
        (html/select-all [:opml :body :outline :outline] (html/attr :xmlurl))))
 
-(defn- html [result]
+(defn- html-export [result]
   (println "<style>\n"
            ".podcast { display:inline-block; }\n"
            ".podcast > img { width:200px; height:200px; }\n"
-           ".podcast > div { border:1px solid gray; display:inline-block; width:30px; height:30px; }\n"
+           ".podcast > div { border:1px solid gray; display:inline-block;"
+           "width:30px; height:30px; }\n"
            "</style>")
   (doseq [[path bg fg] result]
-    (printf (str "<div class=\"podcast\">\n"
-                 "  <img src=\"%s\" /><br />\n"
-                 "  <div style=\"background-color:%s;\"></div>\n"
-                 "  <div style=\"background-color:%s;\"></div>\n"
-                 "  <br />\n"
-                 "</div>\n") path (:hex bg) (:hex fg))))
+    (printf
+     (str "<div class=\"podcast\">\n"
+          "  <img src=\"%s\" /><br />\n"
+          "  <div style=\"background-color:%s;\"></div>\n"
+          "  <div style=\"background-color:%s;\"></div>\n"
+          "  <br />\n"
+          "</div>\n") path (:hex bg) (:hex fg))))
 
 
 ;;; Interface
@@ -61,4 +65,4 @@
   #_(cache (map image-url (podcast-urls "podcasts.opml")))
   (->> (images "resources")
        (map #(cons (.getPath %) (dominance/bg-fg %)))
-       html))
+       html-export))

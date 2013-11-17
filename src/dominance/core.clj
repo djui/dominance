@@ -39,7 +39,7 @@
                       image/YUV-BLACK)]
     (as-> pixels x
          (map image/pixel->yuv x)
-         (k-means/centroids guesses x {:weight-fn weight-fn, :quality 3})
+         (k-means/centroids guesses x {:weight-fn weight-fn, :iterations 10})
          (map #(update-in % [:mean] image/yuv->rgb) x))))
 
 (defn palette-rgb [pixels]
@@ -50,7 +50,7 @@
                       image/RGB-BLACK)]
     (as-> pixels x
          (map image/pixel->rgb x)
-         (k-means/centroids guesses x {:weight-fn weight-fn, :quality 3}))))
+         (k-means/centroids guesses x {:weight-fn weight-fn, :iterations 10}))))
 
 (defn pixel-data [size img]
   (->> img

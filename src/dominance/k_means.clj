@@ -90,7 +90,7 @@
 (defn clusters
   "Calculate clusters given a dataset and guesses, either as scalars or
   vectors."
-  [guesses data & [{:keys [quality] :or {quality 100} :as opts}]]
+  [guesses data & [{:keys [iterations] :or {iterations 100} :as opts}]]
   (let [point (first data)
         guesses' (cond
                   (list?    guesses) guesses
@@ -98,7 +98,7 @@
         k-groups-fn (cond
                      (vector? point) (k-groups data vec-distance vec-average)
                      (number? point) (k-groups data distance average))]
-    (last (take quality (k-groups-fn guesses')))))
+    (last (take iterations (k-groups-fn guesses')))))
 
 (defn centroids
   "Calculate centroids given a dataset and guesses, either as scalars or

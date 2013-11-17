@@ -1,9 +1,9 @@
-(defproject dominance "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject dominance "1.0.0"
+  :description "Find dominant colors in an image"
+  :url "http://github.com/djui/dominance"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :main main
+  :main example
   :dependencies [[enlive "1.1.4"]
                  [midje "1.5.1"]
                  [org.clojure/clojure "1.5.1"]

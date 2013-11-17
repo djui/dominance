@@ -1,4 +1,4 @@
-(ns main
+(ns example
   (:import java.net.URL)
   (:require [clojure.java.io :as io]
             [dominance.core  :as dominance]

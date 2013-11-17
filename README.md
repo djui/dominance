@@ -1,23 +1,44 @@
-# clj-dominant-color
+# Dominance
 
 A library to extract the dominant color in an image. The algorithm is optimized
 for graphics like podcast covers, rather than pictures.
 
 ## Background
 
-After comparing the **k-means clustering** and **Connected-component labeling**
-algorithm, it became clear that the **k-means clustering** algorithm is a better
-fit for pictures and the **Connected-component labeling** algorithm is a better
-for graphics.
-
-This is obvious when comparing the results for sample image `30.jpg` and
-`31.jpg`. The dominant color should be in the yellow top bar (`#??????`) but the
-**k-means clustering** algorithm fails on one of them because of overloading
-noise from the picture beneath.
+Lately many mobile clients exploit the feature to tint their UI elements
+color which is dominant in the podcast or album cover. This library tries to
+resample this feature.
 
 ## Usage
 
-    $ lein run
+To see an examplary usage, run the following command:
+
+```shell
+$ lein run > result.html
+$ open result.html
+```
+
+To use the library in your application, use the following API:
+
+```clojure
+(require '[dominance.core :as dominance]
+         '[clojure.java.io :as io])
+
+;; Extract a palette of maximum 5 most dominant colors
+(->> "resources/01.jpg" io/file dominance/palette (map :hex))
+
+;; Extract the most dominant color
+(->> "resources/01.jpg" io/file dominance/color :hex)
+
+;; Extract the most dominant background and foreground colors
+(->> "resources/01.jpg" io/file dominance/bg-fg (map :hex))
+```
+
+## Credits
+
+Courtesy to the following authors:
+
+* [John Lawrence Aspden](http://www.learningclojure.com/2011/01/k-means-algorithm-for-clustering-data.html)
 
 ## License
 

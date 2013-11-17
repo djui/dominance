@@ -90,33 +90,27 @@
 (defn clusters
   "Calculate clusters given a dataset and guesses, either as scalars or
   vectors."
-  [guesses data]
-  (let [guesses' (cond (list?    guesses) guesses
-                       (integer? guesses) (random-guesses guesses data))
-        k-groups-fn (cond (vector? (first data)) (k-groups data vec-distance vec-average)
-                          (number? (first data)) (k-groups data distance average))]
-    (last (k-groups-fn guesses'))))
+  [guesses data & [{:keys [quality] :or {quality 100}} opts]]
+  (let [point (first data)
+        guesses' (cond
+                  (list?    guesses) guesses
+                  (integer? guesses) (random-guesses guesses data))
+        k-groups-fn (cond
+                     (vector? point) (k-groups data vec-distance vec-average)
+                     (number? point) (k-groups data distance average))]
+    (last (take quality (k-groups-fn guesses')))))
 
 (defn centroids
   "Calculate centroids given a dataset and guesses, either as scalars or
-  vectors."
-  [guesses data]
+  vectors, and return a vector of maps with mean, standard deviation, count, and
+  weight."
+  [guesses data & [{:keys [weight-fn] :or {weight-fn (constantly 1)}} opts]]
   (let [d (first data)
-        average-fn (cond (vector? d) vec-average
-                         (number? d) average)]
-    (map #(apply average-fn %)
-         (clusters guesses data))))
-
-(defn weighted-centroids
-  "Calculate centroids given a dataset and guesses, either as scalars or
-  vectors, and return a vector of mean, standard deviation, and count."
-  [guesses weight-function data]
-  (let [d (first data)
-        res-fn (cond (vector? d) (juxt (&& vec-average) (&& vec-stddev) count)
-                     (number? d) (juxt (&& average) (&& stddev) count))]
-    (->> data
-         (clusters guesses)
+        res-fn (cond
+                (vector? d) (juxt (&& vec-average) (&& vec-stddev) count)
+                (number? d) (juxt (&& average) (&& stddev) count))]
+    (->> (clusters guesses data opts)
          (map #(hash-map' [:mean :stddev :count] (res-fn %)))
-         (map #(assoc-in % [:weight] (weight-function %)))
+         (map #(assoc-in % [:weight] (weight-fn %)))
          (sort-by :weight)
          reverse)))

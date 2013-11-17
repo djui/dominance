@@ -64,5 +64,5 @@
 (defn -main []
   #_(cache (map image-url (podcast-urls "podcasts.opml")))
   (->> (images "resources")
-       (map #(cons (.getPath %) (dominance/bg-fg %)))
+       (pmap #(cons (.getPath %) (dominance/bg-fg %)))
        html-export))

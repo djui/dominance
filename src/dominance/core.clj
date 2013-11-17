@@ -3,6 +3,13 @@
             [dominance.k-means :as k-means]))
 
 
+;;; Utilities
+
+(defn- pjuxt [& fns]
+  (fn [& args]
+    (vec (pmap #(apply % args) fns))))
+
+
 ;;; Internals
 
 (defn filter-palette [palette]
@@ -56,10 +63,10 @@
 
 (defn palette [^java.io.File img]
   (->> img
-       (pixel-data 100)                 ;; Resize
-       ((juxt palette-rgb palette-yuv)) ;; Compute two palettes
-       (apply max-key count)            ;; Pick best palette
-       filter-palette                   ;; Filter out "weak" colors
+       (pixel-data 100)                  ;; Resize
+       ((pjuxt palette-rgb palette-yuv)) ;; Compute two palettes
+       (apply max-key count)             ;; Pick best palette
+       filter-palette                    ;; Filter out "weak" colors
        decorate-palette))
 
 (defn color [^java.io.File img]

@@ -46,7 +46,7 @@
   (first (sort-by #(distance-fn % p) means)))
 
 (defn- point-groups [means data distance-fn]
-  (group-by #(closest % means distance-fn) data))
+  (group-by #(closest % means distance-fn) data)) ;; FIXME: Slow! (0.5s)
 
 (defn- update-seq [sq f]
   (let [freqs (frequencies sq)]
@@ -77,7 +77,7 @@
 
 (defn- k-groups [data distance-fn average-fn]
   (fn [guesses]
-    (take-while-unstable
+    (take-while-unstable ;; FIXME: Too many iterations! (31 * 0.5s)
      (map #(groups data distance-fn %)
           (iterate (iterate-means data distance-fn average-fn) guesses)))))
 

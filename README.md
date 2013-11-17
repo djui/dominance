@@ -1,7 +1,7 @@
 # Dominance
 
-A library to extract the dominant color in an image. The algorithm is optimized
-for graphics like podcast covers, rather than pictures.
+A Clojure library to extract the dominant color in an image. The algorithm is
+optimized for graphics like podcast covers, rather than pictures.
 
 ## Background
 
@@ -21,17 +21,22 @@ $ open result.html
 To use the library in your application, use the following API:
 
 ```clojure
-(require '[dominance.core :as dominance]
-         '[clojure.java.io :as io])
+$ lein repl
+example=> (require '[dominance.core :as dominance]
+                   '[clojure.java.io :as io])
+nil
 
 ;; Extract a palette of maximum 5 most dominant colors
-(->> "resources/01.jpg" io/file dominance/palette (map :hex))
+example=> (->> "resources/01.jpg" io/file dominance/palette (map :hex))
+("#CEDCD9" "#DF827D")
 
 ;; Extract the most dominant color
-(->> "resources/01.jpg" io/file dominance/color :hex)
+example=> (->> "resources/01.jpg" io/file dominance/color :hex)
+("#CEDCD9")
 
 ;; Extract the most dominant background and foreground colors
-(->> "resources/01.jpg" io/file dominance/bg-fg (map :hex))
+example=> (->> "resources/01.jpg" io/file dominance/bg-fg (map :hex))
+("#CEDCD9" "#DF827D")
 ```
 
 ## Credits

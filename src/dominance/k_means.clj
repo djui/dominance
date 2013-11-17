@@ -90,7 +90,7 @@
 (defn clusters
   "Calculate clusters given a dataset and guesses, either as scalars or
   vectors."
-  [guesses data & [{:keys [quality] :or {quality 100}} opts]]
+  [guesses data & [{:keys [quality] :or {quality 100} :as opts}]]
   (let [point (first data)
         guesses' (cond
                   (list?    guesses) guesses
@@ -104,7 +104,7 @@
   "Calculate centroids given a dataset and guesses, either as scalars or
   vectors, and return a vector of maps with mean, standard deviation, count, and
   weight."
-  [guesses data & [{:keys [weight-fn] :or {weight-fn (constantly 1)}} opts]]
+  [guesses data & [{:keys [weight-fn] :as opts}]]
   (let [d (first data)
         res-fn (cond
                 (vector? d) (juxt (&& vec-average) (&& vec-stddev) count)

@@ -18,6 +18,8 @@ $ lein run > result.html
 $ open result.html
 ```
 
+This will create the following [page](result.html).
+
 To use the library in your application, use the following API:
 
 ```clojure
@@ -38,6 +40,11 @@ example=> (->> "resources/01.jpg" io/file dominance/color :hex)
 example=> (->> "resources/01.jpg" io/file dominance/bg-fg (map :hex))
 ("#CEDCD9" "#DF827D")
 ```
+
+## Future work
+
+* Replace k-Means Clustering algorithm with Connected-Components Labeling
+  algorithm.
 
 ## Credits
 
